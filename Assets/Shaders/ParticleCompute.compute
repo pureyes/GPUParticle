@@ -1,0 +1,139 @@
+#pragma kernel UpdateParticles
+
+// 注意：这个结构体必须与 C# 中的 Particle 结构体内存布局完全一致
+// C# 布局: Vector3(12) + float(4) + Vector3(12) + float(4) = 32 bytes
+struct Particle
+{
+    float3 position;  // 12 bytes
+    float life;       // 4 bytes  - 对齐到 16 字节边界
+    float3 velocity;  // 12 bytes
+    float maxLife;    // 4 bytes  - 对齐到 16 字节边界
+};
+
+// 粒子缓冲区
+RWStructuredBuffer<Particle> _ParticleBuffer;
+
+// 时间和发射参数
+float _DeltaTime;
+float _Time;
+float _EmitRadius;
+float _EmitSpeed;
+float _ParticleLife;
+
+// 鼠标交互参数
+float3 _MousePosition;
+float _MouseRadius;
+float _MouseStrength;
+int _MouseActive;
+
+// 粒子数量（由C#端传入，避免每个线程调用GetDimensions）
+int _ParticleCount;
+
+// 随机数生成状态
+uint rng_state;
+
+// Xorshift 随机数生成器
+uint rand_xorshift()
+{
+    rng_state ^= (rng_state << 13);
+    rng_state ^= (rng_state >> 17);
+    rng_state ^= (rng_state << 5);
+    return rng_state;
+}
+
+// 生成 [0, 1) 范围的随机浮点数
+float random_float() 
+{
+    return float(rand_xorshift()) * (1.0 / 4294967296.0);
+}
+
+// 在单位球体内生成随机点
+float3 random_in_unit_sphere()
+{
+    float u = random_float();
+    float v = random_float();
+    float theta = u * 6.28318530718; // 2 * PI
+    float phi = acos(2.0 * v - 1.0);
+    float r = pow(random_float(), 1.0 / 3.0); // 均匀分布在球体内
+    
+    float x = r * sin(phi) * cos(theta);
+    float y = r * sin(phi) * sin(theta);
+    float z = r * cos(phi);
+    
+    return float3(x, y, z);
+}
+
+// 初始化随机种子
+void init_random(uint seed)
+{
+    rng_state = seed + 123456789u;
+    // 预热随机数生成器
+    rand_xorshift();
+    rand_xorshift();
+}
+
+[numthreads(256, 1, 1)]
+void UpdateParticles(uint3 id : SV_DispatchThreadID)
+{
+    // 检查边界 - 使用C#端传入的粒子数量，避免每个线程调用GetDimensions
+    uint particleIndex = id.x;
+    
+    if ((int)particleIndex >= _ParticleCount)
+        return;
+
+    // 用线程ID和时间初始化随机数
+    init_random(particleIndex + (uint)(_Time * 1000.0f) + 12345u);
+
+    // 读取粒子数据
+    Particle p = _ParticleBuffer[particleIndex];
+
+    // 更新生命值
+    p.life -= _DeltaTime;
+
+    // 如果粒子死亡，重置它
+    if (p.life <= 0.0)
+    {
+        p.life = _ParticleLife;
+        p.maxLife = _ParticleLife;
+        p.position = random_in_unit_sphere() * _EmitRadius;
+        p.velocity = random_in_unit_sphere() * _EmitSpeed;
+    }
+
+    // 应用重力
+    p.velocity.y -= 9.8 * _DeltaTime * 0.5; // 轻微重力
+
+    // 鼠标交互 - 排斥力
+    if (_MouseActive == 1)
+    {
+        float3 toParticle = p.position - _MousePosition;
+        float distance = length(toParticle);
+
+        if (distance < _MouseRadius && distance > 0.001)
+        {
+            // 计算排斥力
+            float3 direction = normalize(toParticle);
+            float normalizedDist = distance / _MouseRadius;
+            float force = _MouseStrength * (1.0 - normalizedDist * normalizedDist);
+            
+            // 应用力到速度
+            p.velocity += direction * force * _DeltaTime;
+        }
+    }
+
+    // 添加一些向中心的微弱吸引力（保持粒子在范围内）
+    float distFromCenter = length(p.position);
+    if (distFromCenter > _EmitRadius * 2.0)
+    {
+        float3 toCenter = normalize(-p.position);
+        p.velocity += toCenter * _EmitSpeed * 0.1 * _DeltaTime;
+    }
+
+    // 阻尼 - 模拟空气阻力
+    p.velocity *= (1.0 - 0.1 * _DeltaTime);
+
+    // 更新位置
+    p.position += p.velocity * _DeltaTime;
+
+    // 写回缓冲区
+    _ParticleBuffer[particleIndex] = p;
+}
