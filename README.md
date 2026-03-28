@@ -1,4 +1,4 @@
-# GPU Particle System for Unity WebGL
+# GPU Particle System for Unity
 
 基于 Compute Shader 的高性能 GPU 粒子系统，支持 10 万粒子实时渲染和鼠标交互。
 
@@ -9,12 +9,12 @@
 - 🚀 **10万粒子实时渲染** - GPU 并行计算
 - 🖱️ **鼠标交互** - 点击拖动排斥粒子
 - 🎮 **相机控制** - 右键旋转，滚轮缩放
-- 🌐 **WebGL 2.0 支持** - 现代浏览器流畅运行
 - ⚡ **高性能** - DrawProceduralIndirect 渲染
+- 🖥️ **桌面平台** - 支持 Windows / macOS / Linux
 
 ## 技术栈
 
-- Unity 2021.2+ (WebGL 2.0 Compute Shader 支持)
+- Unity 2021.2+ 
 - Compute Shader - 粒子位置更新
 - HLSL Shader - GPU 渲染
 - C# - 系统管理
@@ -28,16 +28,11 @@
 3. 选择 `Tools > GPU Particle System > Setup Scene`
 4. 点击 Play 运行
 
-### 构建 WebGL
+### 构建设置
 
-1. 选择 `Tools > GPU Particle System > Build WebGL`
-2. 等待构建完成
-3. 打开 `Builds/WebGL/index.html`
-
-或手动构建：
-```
-File > Build Settings > WebGL > Build
-```
+1. 打开 `File > Build Settings`
+2. 选择目标平台（Windows / macOS / Linux）
+3. 点击 Build
 
 ## 操作说明
 
@@ -46,15 +41,6 @@ File > Build Settings > WebGL > Build
 | 左键 + 拖动 | 排斥粒子 |
 | 右键 + 拖动 | 旋转相机 |
 | 滚轮 | 缩放 |
-
-## 浏览器兼容性
-
-| 浏览器 | 支持 |
-|--------|------|
-| Chrome 56+ | ✅ |
-| Firefox 51+ | ✅ |
-| Edge 79+ | ✅ |
-| Safari 15+ | ⚠️ 需启用 WebGL 2.0 |
 
 ## 项目结构
 
@@ -75,7 +61,6 @@ Assets/
 | 桌面 RTX 3060 | 100,000 | 60+ |
 | 笔记本 GTX 1650 | 100,000 | 45-60 |
 | MacBook M1 | 50,000 | 55-60 |
-| 手机 (WebGL) | 20,000 | 30-45 |
 
 ## 自定义
 
@@ -91,9 +76,11 @@ Assets/
 [SerializeField] private float interactionRadius = 5f;
 ```
 
-## 详细文档
+## 系统要求
 
-- [WebGL 设置指南](WEBGL_SETUP.md) - 完整的构建和部署说明
+- **操作系统**: Windows 10+, macOS 10.15+, or Linux
+- **显卡**: 支持 DirectX 11 / OpenGL 4.5 / Vulkan 的独立显卡
+- **Unity**: 2021.2 或更高版本
 
 ## 许可证
 

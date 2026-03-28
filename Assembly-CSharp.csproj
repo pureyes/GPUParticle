@@ -65,7 +65,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\GPUParticle\GPUParticleSystem.cs" />
-    <Compile Include="Assets\Scripts\GPUParticle\WebGLCompatibility.cs" />
     <Compile Include="Assets\Scripts\GPUParticle\ParticleTextureGenerator.cs" />
     <Compile Include="Assets\Scripts\GPUParticle\FPSDisplay.cs" />
     <Compile Include="Assets\Scripts\GPUParticle\CameraController.cs" />
