@@ -3,3 +3,8 @@ Logs/
 obj/
 Temp/
 *.csproj
+GPUParticleTest.sln
+.vscode/
+.kimi-backup/
+UserSettings/
+.kimi-review.json
