@@ -16,6 +16,16 @@ public class GPUParticleRendererFeature : ScriptableRendererFeature
         public Material particleMaterial;
         public int particleCount = 100000;
         
+        [Header("发射参数")]
+        public float emitRadius = 10f;
+        public float emitSpeed = 5f;
+        public float particleLife = 3f;
+        
+        [Header("鼠标交互")]
+        public bool enableMouseInteraction = true;
+        public float interactionRadius = 3f;
+        public float interactionStrength = 50f;
+        
         [Header("渲染时机")]
         [Tooltip("选择粒子在URP管线的哪个阶段渲染")]
         public RenderPassEvent renderPassEvent = RenderPassEvent.AfterRenderingTransparents;

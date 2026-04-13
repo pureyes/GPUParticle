@@ -23,6 +23,13 @@ public class GPUParticleRenderPass : ScriptableRenderPass
     private static readonly int DeltaTimeID = Shader.PropertyToID("_DeltaTime");
     private static readonly int TimeID = Shader.PropertyToID("_Time");
     private static readonly int ParticleCountID = Shader.PropertyToID("_ParticleCount");
+    private static readonly int EmitRadiusID = Shader.PropertyToID("_EmitRadius");
+    private static readonly int EmitSpeedID = Shader.PropertyToID("_EmitSpeed");
+    private static readonly int ParticleLifeID = Shader.PropertyToID("_ParticleLife");
+    private static readonly int MousePositionID = Shader.PropertyToID("_MousePosition");
+    private static readonly int MouseRadiusID = Shader.PropertyToID("_MouseRadius");
+    private static readonly int MouseStrengthID = Shader.PropertyToID("_MouseStrength");
+    private static readonly int MouseActiveID = Shader.PropertyToID("_MouseActive");
     
     public GPUParticleRenderPass(GPUParticleRendererFeature.Settings settings)
     {
@@ -107,9 +114,48 @@ public class GPUParticleRenderPass : ScriptableRenderPass
         _particleCompute.SetFloat(DeltaTimeID, Time.deltaTime);
         _particleCompute.SetFloat(TimeID, Time.time);
         _particleCompute.SetInt(ParticleCountID, _settings.particleCount);
+        
+        // 发射参数
+        _particleCompute.SetFloat(EmitRadiusID, _settings.emitRadius);
+        _particleCompute.SetFloat(EmitSpeedID, _settings.emitSpeed);
+        _particleCompute.SetFloat(ParticleLifeID, _settings.particleLife);
+        
+        // 鼠标交互
+        if (_settings.enableMouseInteraction && Camera.main != null)
+        {
+            HandleMouseInteraction();
+        }
+        else
+        {
+            _particleCompute.SetInt(MouseActiveID, 0);
+        }
+        
         _particleCompute.SetBuffer(_updateKernel, ParticleBufferID, _particleBuffer);
         
         _particleCompute.Dispatch(_updateKernel, _threadGroups, 1, 1);
+    }
+    
+    private void HandleMouseInteraction()
+    {
+        Vector3 mouseWorldPos = Vector3.zero;
+        int mouseActive = 0;
+        
+        if (Input.GetMouseButton(0))
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            Plane groundPlane = new Plane(Vector3.up, Vector3.zero);
+            
+            if (groundPlane.Raycast(ray, out float enter))
+            {
+                mouseWorldPos = ray.GetPoint(enter);
+                mouseActive = 1;
+            }
+        }
+        
+        _particleCompute.SetVector(MousePositionID, mouseWorldPos);
+        _particleCompute.SetFloat(MouseRadiusID, _settings.interactionRadius);
+        _particleCompute.SetFloat(MouseStrengthID, _settings.interactionStrength);
+        _particleCompute.SetInt(MouseActiveID, mouseActive);
     }
     
     private void RenderParticles(ScriptableRenderContext context, RenderingData renderingData)

@@ -16,8 +16,8 @@ MonoBehaviour:
     debugReplacementPS: {fileID: 4800000, guid: cf852408f2e174538bcd9b7fda1c5ae7, type: 3}
     hdrDebugViewPS: {fileID: 4800000, guid: 573620ae32aec764abd4d728906d2587, type: 3}
   m_RendererFeatures:
-  - {fileID: 1058626130967494125}
-  m_RendererFeatureMap: ed7d4376dbfeb00e
+  - {fileID: 4484732419852280307}
+  m_RendererFeatureMap: f321f9ed5ff83c3e
   m_UseNativeRenderPass: 0
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
   xrSystemData: {fileID: 11400000, guid: 60e1133243b97e347b653163a8c01b64, type: 2}
@@ -59,7 +59,7 @@ MonoBehaviour:
   m_CopyDepthMode: 1
   m_AccurateGbufferNormals: 0
   m_IntermediateTextureMode: 1
---- !u!114 &1058626130967494125
+--- !u!114 &4484732419852280307
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -76,5 +76,11 @@ MonoBehaviour:
     particleCompute: {fileID: 7200000, guid: eecc7d90e97064b4cae1330ca87f4d6c, type: 3}
     particleMaterial: {fileID: 2100000, guid: 4cac5dd0f001108448660941b7ed1034, type: 2}
     particleCount: 100000
+    emitRadius: 10
+    emitSpeed: 5
+    particleLife: 3
+    enableMouseInteraction: 1
+    interactionRadius: 3
+    interactionStrength: 100
     renderPassEvent: 500
-    showDebugInfo: 0
+    showDebugInfo: 1
