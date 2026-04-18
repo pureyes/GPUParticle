@@ -82,5 +82,5 @@ MonoBehaviour:
     enableMouseInteraction: 1
     interactionRadius: 3
     interactionStrength: 100
-    renderPassEvent: 500
+    renderPassEvent: 300
     showDebugInfo: 1

@@ -96,7 +96,14 @@ public class GPUParticleRenderPass : ScriptableRenderPass
             Debug.Log($"[GPUParticleRenderPass] 初始化完成: {_settings.particleCount} 粒子, 渲染时机: {_settings.renderPassEvent}");
         }
     }
-    
+#if UNITY_EDITOR
+    public override void OnCameraSetup(CommandBuffer cmd, ref RenderingData renderingData)
+    {
+        renderPassEvent = _settings.renderPassEvent;
+        base.OnCameraSetup(cmd, ref renderingData);
+    }
+#endif
+
     public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
     {
         if (!_initialized || _particleBuffer == null)
