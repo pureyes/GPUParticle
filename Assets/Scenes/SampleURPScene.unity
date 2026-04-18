@@ -558,75 +558,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1365642614}
   m_CullTransparentMesh: 1
---- !u!1 &1575594411
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1575594414}
-  - component: {fileID: 1575594413}
-  - component: {fileID: 1575594412}
-  m_Layer: 0
-  m_Name: GPUParticleSystem
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1575594412
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1575594411}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bae77c89d742545408a6c72cb82a75f5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  showDebugInfo: 1
---- !u!114 &1575594413
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1575594411}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 08139ee73d811d740ba9586109e5cdf2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  particleCount: 100000
-  emitRadius: 10
-  emitSpeed: 5
-  particleLife: 5
-  particleSize: 0.08
-  particleCompute: {fileID: 7200000, guid: eecc7d90e97064b4cae1330ca87f4d6c, type: 3}
-  particleMaterial: {fileID: 2100000, guid: 4cac5dd0f001108448660941b7ed1034, type: 2}
-  particleTexture: {fileID: 2800000, guid: 9c2141d4e221128409131ea6a4cb9e8f, type: 2}
-  interactionRadius: 5
-  interactionStrength: 30
-  enableMouseInteraction: 1
---- !u!4 &1575594414
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1575594411}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1659751900
 GameObject:
   m_ObjectHideFlags: 0
@@ -661,7 +592,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fpsText: {fileID: 1078805962}
   particleCountText: {fileID: 1703653298}
-  particleSystem: {fileID: 0}
   updateInterval: 0.5
 --- !u!114 &1659751902
 MonoBehaviour:
@@ -901,6 +831,5 @@ SceneRoots:
   m_Roots:
   - {fileID: 963194228}
   - {fileID: 705507995}
-  - {fileID: 1575594414}
   - {fileID: 1659751905}
   - {fileID: 1911298767}
