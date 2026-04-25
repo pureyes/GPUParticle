@@ -21,6 +21,11 @@ public class GPUParticleRendererFeature : ScriptableRendererFeature
         public float emitSpeed = 5f;
         public float particleLife = 3f;
         
+        [Header("物理参数")]
+        public float gravity = 9.8f;
+        public float damping = 0.1f;
+        public Vector3 windForce = Vector3.zero;
+        
         [Header("鼠标交互")]
         public bool enableMouseInteraction = true;
         public float interactionRadius = 3f;

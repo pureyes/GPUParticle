@@ -26,6 +26,11 @@ float _MouseRadius;
 float _MouseStrength;
 int _MouseActive;
 
+// 物理参数
+float _Gravity;
+float _Damping;
+float3 _WindForce;
+
 // 粒子数量（由C#端传入，避免每个线程调用GetDimensions）
 int _ParticleCount;
 
@@ -100,7 +105,7 @@ void UpdateParticles(uint3 id : SV_DispatchThreadID)
     }
 
     // 应用重力
-    p.velocity.y -= 9.8 * _DeltaTime * 0.5; // 轻微重力
+    p.velocity.y -= _Gravity * _DeltaTime;
 
     // 鼠标交互 - 排斥力
     if (_MouseActive == 1)
@@ -128,8 +133,11 @@ void UpdateParticles(uint3 id : SV_DispatchThreadID)
         p.velocity += toCenter * _EmitSpeed * 0.1 * _DeltaTime;
     }
 
+    // 应用风力
+    p.velocity += _WindForce * _DeltaTime;
+
     // 阻尼 - 模拟空气阻力
-    p.velocity *= (1.0 - 0.1 * _DeltaTime);
+    p.velocity *= (1.0 - _Damping * _DeltaTime);
 
     // 更新位置
     p.position += p.velocity * _DeltaTime;

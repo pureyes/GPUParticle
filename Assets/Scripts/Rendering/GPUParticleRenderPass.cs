@@ -31,6 +31,9 @@ public class GPUParticleRenderPass : ScriptableRenderPass
     private static readonly int MouseRadiusID = Shader.PropertyToID("_MouseRadius");
     private static readonly int MouseStrengthID = Shader.PropertyToID("_MouseStrength");
     private static readonly int MouseActiveID = Shader.PropertyToID("_MouseActive");
+    private static readonly int GravityID = Shader.PropertyToID("_Gravity");
+    private static readonly int DampingID = Shader.PropertyToID("_Damping");
+    private static readonly int WindForceID = Shader.PropertyToID("_WindForce");
     
     public GPUParticleRenderPass(GPUParticleRendererFeature.Settings settings)
     {
@@ -105,13 +108,38 @@ public class GPUParticleRenderPass : ScriptableRenderPass
     }
 #endif
 
+    public bool IsPaused { get; set; }
+    
+    public void ResetParticles()
+    {
+        if (_particleBuffer == null || !_initialized) return;
+        
+        ParticleData[] particles = new ParticleData[_settings.particleCount];
+        for (int i = 0; i < _settings.particleCount; i++)
+        {
+            particles[i] = new ParticleData
+            {
+                position = Random.insideUnitSphere * _settings.emitRadius,
+                life = Random.Range(0f, _settings.particleLife),
+                velocity = Random.insideUnitSphere * _settings.emitSpeed,
+                maxLife = _settings.particleLife
+            };
+        }
+        _particleBuffer.SetData(particles);
+        
+        if (_settings.showDebugInfo)
+        {
+            Debug.Log("[GPUParticleRenderPass] 粒子已重置");
+        }
+    }
+    
     public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
     {
         if (!_initialized || _particleBuffer == null)
             return;
         
         // 1. 更新粒子（Compute Shader）——每帧只执行一次，避免多相机重复Dispatch
-        if (Time.renderedFrameCount != _lastUpdateFrame)
+        if (Time.renderedFrameCount != _lastUpdateFrame && !IsPaused)
         {
             UpdateParticles();
             _lastUpdateFrame = Time.renderedFrameCount;
@@ -130,6 +158,11 @@ public class GPUParticleRenderPass : ScriptableRenderPass
     _particleCompute.SetFloat(DeltaTimeID, dt);
     _particleCompute.SetFloat(TimeID, time);
     _particleCompute.SetInt(ParticleCountID, _settings.particleCount);
+    
+        // 物理参数
+        _particleCompute.SetFloat(GravityID, _settings.gravity);
+        _particleCompute.SetFloat(DampingID, _settings.damping);
+        _particleCompute.SetVector(WindForceID, _settings.windForce);
 
         // _particleCompute.SetFloat(DeltaTimeID, Time.deltaTime);
         // _particleCompute.SetFloat(TimeID, Time.time);
