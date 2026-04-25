@@ -30,6 +30,9 @@ public class GPUParticleRendererFeature : ScriptableRendererFeature
         [Tooltip("选择粒子在URP管线的哪个阶段渲染")]
         public RenderPassEvent renderPassEvent = RenderPassEvent.AfterRenderingTransparents;
         
+        [Header("Scene View")]
+        public bool enableSceneViewPreview = true;
+        
         [Header("调试")]
         public bool showDebugInfo = false;
     }
@@ -44,9 +47,13 @@ public class GPUParticleRendererFeature : ScriptableRendererFeature
     
     public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
     {
-        // 只有Game视图和Scene视图都渲染
-        var cameraType = renderingData.cameraData.cameraType;
-        if (cameraType == CameraType.Game || cameraType == CameraType.SceneView)
+        var cameraType = renderingData.cameraData.cameraType; 
+                // 加这行诊断
+        Debug.Log($"[{GetType().Name}] CameraType={cameraType}, enableSceneView={settings.enableSceneViewPreview}");
+    
+        bool shouldRender = cameraType == CameraType.Game || 
+                            (cameraType == CameraType.SceneView && settings.enableSceneViewPreview);
+        if (shouldRender)
         {
             renderer.EnqueuePass(_particlePass);
         }

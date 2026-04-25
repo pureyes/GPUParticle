@@ -7,8 +7,6 @@ using UnityEngine.UI;
 public class FPSDisplay : MonoBehaviour
 {
     [SerializeField] private Text fpsText;
-    [SerializeField] private Text particleCountText;
-    //[SerializeField] private GPUParticleSystem particleSystem;
     
     [Header("Settings")]
     [SerializeField] private float updateInterval = 0.5f;
@@ -40,11 +38,6 @@ public class FPSDisplay : MonoBehaviour
                 else
                     fpsText.color = Color.red;
             }
-
-            // if (particleCountText != null && particleSystem != null)
-            // {
-            //     particleCountText.text = $"Particles: {particleSystem.GetParticleCount():N0}";
-            // }
 
             // 重置累加器
             accumTime = 0f;

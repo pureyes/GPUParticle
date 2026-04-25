@@ -76,11 +76,12 @@ MonoBehaviour:
     particleCompute: {fileID: 7200000, guid: eecc7d90e97064b4cae1330ca87f4d6c, type: 3}
     particleMaterial: {fileID: 2100000, guid: 4cac5dd0f001108448660941b7ed1034, type: 2}
     particleCount: 100000
-    emitRadius: 10
+    emitRadius: 6
     emitSpeed: 5
     particleLife: 3
     enableMouseInteraction: 1
     interactionRadius: 3
     interactionStrength: 100
     renderPassEvent: 300
+    enableSceneViewPreview: 1
     showDebugInfo: 1

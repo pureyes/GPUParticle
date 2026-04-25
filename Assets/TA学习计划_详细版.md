@@ -56,7 +56,7 @@
 - 技术博客：《URP Renderer Feature实战：把Compute Shader粒子集成到管线》
 
 **检查标准**：
-- [ ] 粒子在不改变原有MonoBehaviour的情况下，通过Renderer Feature渲染
+- [ ] //粒子在不改变原有MonoBehaviour的情况下，通过Renderer Feature渲染
 - [ ] 可以在Inspector中切换渲染时机并实时看到效果
 - [ ] Scene View和Game View都正确显示
 

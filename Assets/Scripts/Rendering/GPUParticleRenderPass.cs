@@ -13,6 +13,7 @@ public class GPUParticleRenderPass : ScriptableRenderPass
     private ComputeBuffer _indirectArgsBuffer;
     private int _threadGroups;
     private bool _initialized;
+    private int _lastUpdateFrame = -1;
     
     // Compute Shader相关
     private int _updateKernel;
@@ -109,8 +110,12 @@ public class GPUParticleRenderPass : ScriptableRenderPass
         if (!_initialized || _particleBuffer == null)
             return;
         
-        // 1. 更新粒子（Compute Shader）
-        UpdateParticles();
+        // 1. 更新粒子（Compute Shader）——每帧只执行一次，避免多相机重复Dispatch
+        if (Time.renderedFrameCount != _lastUpdateFrame)
+        {
+            UpdateParticles();
+            _lastUpdateFrame = Time.renderedFrameCount;
+        }
         
         // 2. 渲染粒子
         RenderParticles(context, renderingData);
@@ -118,9 +123,17 @@ public class GPUParticleRenderPass : ScriptableRenderPass
     
     private void UpdateParticles()
     {
-        _particleCompute.SetFloat(DeltaTimeID, Time.deltaTime);
-        _particleCompute.SetFloat(TimeID, Time.time);
-        _particleCompute.SetInt(ParticleCountID, _settings.particleCount);
+            // === 修复: 在编辑器模式下强制提供一个假的时间流逝 ===
+    float dt = Application.isPlaying ? Time.deltaTime : 0.016f; // 非运行状态强制16ms增量
+    float time = Application.isPlaying ? Time.time : (float)UnityEditor.EditorApplication.timeSinceStartup;
+    
+    _particleCompute.SetFloat(DeltaTimeID, dt);
+    _particleCompute.SetFloat(TimeID, time);
+    _particleCompute.SetInt(ParticleCountID, _settings.particleCount);
+
+        // _particleCompute.SetFloat(DeltaTimeID, Time.deltaTime);
+        // _particleCompute.SetFloat(TimeID, Time.time);
+        // _particleCompute.SetInt(ParticleCountID, _settings.particleCount);
         
         // 发射参数
         _particleCompute.SetFloat(EmitRadiusID, _settings.emitRadius);
@@ -167,6 +180,24 @@ public class GPUParticleRenderPass : ScriptableRenderPass
     
     private void RenderParticles(ScriptableRenderContext context, RenderingData renderingData)
     {
+        var camera = renderingData.cameraData.camera;
+        
+        // 相机视锥体剔除：相机看不到粒子包围盒时直接跳过
+        if (!IsVisibleToCamera(camera))
+        {
+            if (_settings.showDebugInfo)
+            {
+                Debug.Log($"[GPUParticleRenderPass] 相机 {camera.name} 视锥体外，跳过渲染");
+            }
+            return;
+        }
+
+        if (_settings.showDebugInfo)
+        {
+            string cameraName = camera != null ? camera.name : "Unknown";
+            Debug.Log($"[GPUParticleRenderPass] 相机: {cameraName}, 渲染时机: {renderPassEvent}, 粒子数: {_settings.particleCount}");
+        }
+        
         CommandBuffer cmd = CommandBufferPool.Get("GPUParticleRender");
         
         // 设置材质参数
@@ -183,6 +214,17 @@ public class GPUParticleRenderPass : ScriptableRenderPass
         
         context.ExecuteCommandBuffer(cmd);
         CommandBufferPool.Release(cmd);
+    }
+    
+    private bool IsVisibleToCamera(Camera camera)
+    {
+        if (camera == null) return true;
+        
+        // 粒子发射范围：以原点为中心，半径为 emitRadius 的包围盒
+        Bounds bounds = new Bounds(Vector3.zero, Vector3.one * _settings.emitRadius * 2f);
+        
+        Plane[] planes = GeometryUtility.CalculateFrustumPlanes(camera);
+        return GeometryUtility.TestPlanesAABB(planes, bounds);
     }
     
     public void Dispose()
