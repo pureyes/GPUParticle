@@ -55,7 +55,7 @@
 //                 v2f o;
 //                 //MVP 矩阵变换：模型->世界->观察->裁剪
 //                 o.vertex = UnityObjectToClipPos(v.vertex);
-//                 //uv * _MainTex_ST.xy + _MainText_ST.zw
+//                 //等价于 uv * _MainTex_ST.xy + _MainText_ST.zw
 //                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
 //                 //计算雾效因子，存入o.fogCoord
 //                 UNITY_TRANSFER_FOG(o,o.vertex);
@@ -78,7 +78,7 @@
 // }
 
 //虽然Built-in的Shader在URP里通常也能编译(Unity会做兼容)但建议写URP格式更规范
-Shader "Unlit/Unlit_Color"
+Shader "Unlit/Basic/Unlit_Color"
 {
     Properties
     {
