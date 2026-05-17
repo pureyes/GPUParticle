@@ -40,7 +40,7 @@
 //             {
 //                 float2 uv : TEXCOORD2;  //UV传给片元着色器
 //                 UNITY_FOG_COORDS(1)   //雾效插值数据，存在TEXCOORD1
-//                 float4 vertex : SV_POSITION;    //裁剪空间位置（必须）
+//                 float4 vertex : SV_POSITION;    //裁剪空间位置（必须）顶点输出的时候
 //                 //SV_POSITION = System Value Position, GPU光栅化必须得语义
 //             };
 
